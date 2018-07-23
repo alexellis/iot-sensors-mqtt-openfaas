@@ -4,14 +4,15 @@ Follow the guide: https://docs.openfaas.com/deployment/docker-swarm/
 
 ## Deploy InfluxDB and Grafana
 
-```
+```bash
 docker stack deploy monitor -c docker-compose.yml
 ```
 
 ## Create initial database
 
-```
-curl -XPOST "http://127.0.0.1:8086/query" --data-urlencode "q=CREATE DATABASE iot_environment"
+```bash
+curl -XPOST "http://127.0.0.1:8086/query" \
+--data-urlencode "q=CREATE DATABASE iot_environment"
 ```
 
 ## Create a Python3 function
@@ -31,7 +32,7 @@ influxdb
 Edit accept-sample.yml and add the environmental variables:
 
 
-```
+```yaml
     environment:
        influx_host: influxdb
        influx_port: 8086
@@ -40,14 +41,14 @@ Edit accept-sample.yml and add the environmental variables:
 
 Now create secure secrets for your username/password for InfluxDB:
 
-```
+```bash
 echo -n root | docker secret create influx-user -
 echo -n root | docker secret create influx-pass -
 ```
 
 Add a section under the function for the secrets:
 
-```
+```yaml
     secrets:
        - influx-user
        - influx-pass
@@ -74,7 +75,7 @@ docker service update accept-sample  --network-add=monitor_monitoring
 ## Send a fake sensor reading
 
 
-```
+```bash
 echo -n '
 { "sensor": "s1",
   "temp": "30.4",
@@ -92,7 +93,7 @@ Navigate to the Grafana interface at: http://127.0.0.1:3000, use admin/admin to 
 
 Import the data-source for InfluxDB:
 
-```
+```bash
 curl -H "Content-Type: application/json" \
 -X POST http://admin:admin@127.0.0.1:3000/api/datasources --data-binary '
 {
@@ -121,3 +122,12 @@ Now create the dashboard:
 curl -H "Content-Type: application/json" \
 -X POST http://admin:admin@127.0.0.1:3000/api/dashboards/db --data-binary @./dashboard.json
 ```
+
+## Set up the MQTT broker
+
+You can now set up the MQTT broker to start forwarding sensor readings from the MQTT topic to OpenFaaS. OpenFaaS will call into InfluxDB to store the readings.
+
+You can then view the readings using the Grafana dashboard we created above.
+
+![](./images/sensor-dashboard.png)
+
