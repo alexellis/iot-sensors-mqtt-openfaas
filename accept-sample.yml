@@ -1,0 +1,20 @@
+provider:
+  name: faas
+  gateway: http://127.0.0.1:8080
+
+functions:
+  accept-sample:
+    lang: python3
+    handler: ./accept-sample
+    image: alexellis2/accept-sample
+    environment:
+      influx_host: influx
+      influx_port: 8086
+      influx_db: iot_environment
+      write_debug: true
+      read_debug: true
+      combine_output: false
+    secrets:
+       - influx-user
+       - influx-pass
+

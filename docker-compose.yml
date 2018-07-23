@@ -1,0 +1,37 @@
+version: "3.2"
+services:
+  influx:
+    image: influxdb
+    ports:
+     - "8083:8083"
+     - "8086:8086"
+    environment:
+     - INFLUXDB_NAME=environment
+     - PRE_CREATE_DB="environment"
+    env_file:
+     - influx_db_creds.env
+    networks:
+      - monitoring
+      - func_functions
+
+  grafana:
+    image: grafana/grafana
+    environment:
+     - INFLUXDB_NAME=environment
+    env_file:
+     - influx_db_creds.env
+    ports:
+     - "3000:3000"
+    networks:
+      - monitoring
+      - func_functions
+
+networks:
+    monitoring:
+        driver: overlay
+        attachable: true
+        labels:
+          - "openfaas=true"
+    func_functions:
+         external: true
+
