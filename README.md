@@ -127,6 +127,8 @@ curl -H "Content-Type: application/json" \
 
 You can now set up the MQTT broker to start forwarding sensor readings from the MQTT topic to OpenFaaS. OpenFaaS will call into InfluxDB to store the readings.
 
+Follow the instructions in the [mqtt-broker](./mqtt-broker/README.md) folder.
+
 You can then view the readings using the Grafana dashboard we created above.
 
 ![](./images/sensor-dashboard.png)
